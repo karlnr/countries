@@ -4,6 +4,8 @@
 //
 //  Created by karl on 10/5/25.
 //
+
+import Combine
 import Foundation
 
 struct MockCountryDataSource: CountryDataSource {
@@ -14,13 +16,15 @@ struct MockCountryDataSource: CountryDataSource {
         return try Data(contentsOf: url)
     }
     
-    func fetchCountries() -> [Country] {
-        do {
-            let data = try loadLocalData()
-            return try JSONDecoder().decode([Country].self, from: data)
-        } catch {
-            print("Error in mock \(#function): \(error)")
-            return []
-        }
+    /// Fetches countries from local JSON bundle.
+    ///
+    /// - Note: Includes a 2-second delay to simulate network latency for testing loading states.
+    func fetchCountries() -> AnyPublisher<[Country], Error> {
+        Result { try loadLocalData() }
+            .publisher
+            .delay(for: 2.0, scheduler: DispatchQueue.main)
+            .decode(type: [Country].self, decoder: JSONDecoder())
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
 }

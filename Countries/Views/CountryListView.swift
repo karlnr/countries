@@ -15,6 +15,11 @@ struct CountryListView: View {
             Text(country.code)
         }
         .padding()
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
+            }
+        }
         .onAppear {
             viewModel.loadCountries()
         }

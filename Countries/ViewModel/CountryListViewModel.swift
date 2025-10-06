@@ -5,6 +5,7 @@
 //  Created by karl on 10/6/25.
 //
 
+import Combine
 import Observation
 
 @Observable
@@ -14,6 +15,7 @@ class CountryListViewModel {
     var errorMessage: String?
     
     private let dataSource: CountryDataSource
+    private var cancellables = Set<AnyCancellable>()
     
     init(dataSource: CountryDataSource) {
         self.dataSource = dataSource
@@ -22,8 +24,16 @@ class CountryListViewModel {
     func loadCountries() {
         isLoading = true
         errorMessage = nil
-        countries = dataSource.fetchCountries()
-        isLoading = false
+        
+        dataSource.fetchCountries()
+            .sink { [weak self] completion in
+                self?.isLoading = false
+                if case .failure(let error) = completion {
+                    self?.errorMessage = "Failed to load countries: \(error)"
+                }
+            } receiveValue: { [weak self] countries in
+                self?.countries = countries
+            }
+            .store(in: &cancellables)
     }
-    
 }
