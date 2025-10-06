@@ -8,17 +8,19 @@
 import SwiftUI
 
 struct CountryListView: View {
+    var countries: [Country] = []
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        List(countries) { country in
+            Text(country.code)
         }
         .padding()
     }
 }
 
 #Preview {
-    CountryListView()
+    let mockDataSource = MockCountryDataSource()
+    let mockCountries = mockDataSource.fetchCountries()
+    Text("count: \(mockCountries.count)")
+    CountryListView(countries: mockCountries)
 }
