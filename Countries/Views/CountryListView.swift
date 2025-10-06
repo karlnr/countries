@@ -36,6 +36,9 @@ struct CountryListView: View {
 
 #Preview {
     let mockDataSource = MockCountryDataSource()
-    let mockViewModel = CountryListViewModel(dataSource: mockDataSource)
+    
+    #warning("Remote data source enabled in previews")
+    let mockViewModel = CountryListViewModel(dataSource: NetworkCountryDataSource())
+    
     CountryListView(viewModel: mockViewModel)
 }
