@@ -10,8 +10,10 @@ import SwiftUI
 @main
 struct CountriesApp: App {
     var body: some Scene {
+        @State var viewModel = CountryListViewModel(dataSource: MockCountryDataSource())
+        
         WindowGroup {
-            CountryListView()
+            CountryListView(viewModel: viewModel)
         }
     }
 }

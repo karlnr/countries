@@ -8,19 +8,21 @@
 import SwiftUI
 
 struct CountryListView: View {
-    var countries: [Country] = []
+    let viewModel: CountryListViewModel
     
     var body: some View {
-        List(countries) { country in
+        List(viewModel.countries) { country in
             Text(country.code)
         }
         .padding()
+        .onAppear {
+            viewModel.loadCountries()
+        }
     }
 }
 
 #Preview {
     let mockDataSource = MockCountryDataSource()
-    let mockCountries = mockDataSource.fetchCountries()
-    Text("count: \(mockCountries.count)")
-    CountryListView(countries: mockCountries)
+    let mockViewModel = CountryListViewModel(dataSource: mockDataSource)
+    CountryListView(viewModel: mockViewModel)
 }
