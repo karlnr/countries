@@ -12,7 +12,7 @@ struct CountryListView: View {
     
     var body: some View {
         List(viewModel.countries) { country in
-            Text(country.code)
+            CountryRowView(country: country)
         }
         .padding()
         .overlay {
@@ -36,9 +36,6 @@ struct CountryListView: View {
 
 #Preview {
     let mockDataSource = MockCountryDataSource()
-    
-    #warning("Remote data source enabled in previews")
-    let mockViewModel = CountryListViewModel(dataSource: NetworkCountryDataSource())
-    
+    let mockViewModel = CountryListViewModel(dataSource: mockDataSource)
     CountryListView(viewModel: mockViewModel)
 }
