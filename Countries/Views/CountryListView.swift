@@ -20,6 +20,14 @@ struct CountryListView: View {
                 ProgressView()
             }
         }
+        .alert(viewModel.errorMessage ?? "Unknown Error", isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.errorMessage = nil } }
+        )) {
+            Button("OK") {
+                viewModel.errorMessage = nil
+            }
+        }
         .onAppear {
             viewModel.loadCountries()
         }

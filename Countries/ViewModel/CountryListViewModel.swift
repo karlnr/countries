@@ -7,6 +7,7 @@
 
 import Combine
 import Observation
+import Foundation
 
 @Observable
 class CountryListViewModel {
@@ -29,7 +30,7 @@ class CountryListViewModel {
             .sink { [weak self] completion in
                 self?.isLoading = false
                 if case .failure(let error) = completion {
-                    self?.errorMessage = "Failed to load countries: \(error)"
+                    self?.errorMessage = "Failed to load countries: \(error.localizedDescription)"
                 }
             } receiveValue: { [weak self] countries in
                 self?.countries = countries
