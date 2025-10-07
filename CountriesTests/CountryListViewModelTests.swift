@@ -77,7 +77,8 @@ struct CountryListViewModelTests {
         let viewModel = CountryListViewModel(dataSource: errorDataSource)
         
         viewModel.loadCountries()
-        try await Task.sleep(for: .milliseconds(100))
+        // Wait for async error completion (ErrorMockDataSource has 200ms delay)
+        try await Task.sleep(for: .milliseconds(300))
         
         #expect(viewModel.countries.isEmpty)
         #expect(viewModel.errorMessage != nil)
@@ -98,6 +99,23 @@ struct CountryListViewModelTests {
         #expect(viewModel.countries.isEmpty)
         #expect(viewModel.errorMessage == nil)
     }
+    
+    @Test("Retry after error clears previous error")
+    @MainActor
+    func retryAfterError() async throws {
+        let errorDataSource = ErrorMockDataSource()
+        let viewModel = CountryListViewModel(dataSource: errorDataSource)
+        
+        // First attempt - error
+        viewModel.loadCountries()
+        try await Task.sleep(for: .milliseconds(300))
+        #expect(viewModel.errorMessage != nil)
+        
+        // Retry - should clear error and try again
+        viewModel.loadCountries()
+        #expect(viewModel.errorMessage == nil)
+        #expect(viewModel.isLoading == true)
+    }
 }
 
 // MARK: - Test Helpers
@@ -105,6 +123,8 @@ struct CountryListViewModelTests {
 struct ErrorMockDataSource: CountryDataSource {
     func fetchCountries() -> AnyPublisher<[Country], any Error> {
         return Fail(error: URLError(.badURL))
+            // Simulate async error for loading states
+            .delay(for: 0.2, scheduler: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 }
