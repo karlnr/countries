@@ -12,7 +12,6 @@ struct NetworkCountryDataSource: CountryDataSource {
     private let remoteURL = "https://gist.githubusercontent.com/peymano-wmt/32dcb892b06648910ddd40406e37fdab/raw/db25946fd77c5873b0303b858e861ce724e0dcd0/countries.json"
     
     func fetchCountries() -> AnyPublisher<[Country], any Error> {
-        
         guard let url = URL(string: remoteURL) else {
             return Fail(error: URLError(.badURL))
                 .eraseToAnyPublisher()

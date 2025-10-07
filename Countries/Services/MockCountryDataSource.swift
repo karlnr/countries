@@ -17,12 +17,9 @@ struct MockCountryDataSource: CountryDataSource {
     }
     
     /// Fetches countries from local JSON bundle.
-    ///
-    /// - Note: Includes a 2-second delay to simulate network latency for testing loading states.
     func fetchCountries() -> AnyPublisher<[Country], Error> {
         Result { try loadLocalData() }
             .publisher
-            .delay(for: 2.0, scheduler: DispatchQueue.main)
             .decode(type: [Country].self, decoder: JSONDecoder())
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
