@@ -28,7 +28,7 @@ struct CountryListView: View {
                     )
                 }
             }
-            .alert(defaultErrorMessage, isPresented: isErrorPresented, actions: dismissErrorButton)
+            .alert(errorMessage, isPresented: isErrorPresented, actions: dismissErrorButton)
             .refreshable(action: viewModel.loadCountries)
             .onAppear(perform: viewModel.loadCountries)
         }
@@ -38,6 +38,10 @@ struct CountryListView: View {
 // MARK: - Alert
 
 extension CountryListView {
+    private var errorMessage: String {
+        viewModel.errorMessage ?? defaultErrorMessage
+    }
+    
     private func dismissErrorButton() -> some View {
         Button("Dismiss") {
             viewModel.errorMessage = nil
