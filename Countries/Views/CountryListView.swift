@@ -28,23 +28,31 @@ struct CountryListView: View {
                     )
                 }
             }
-            .alert(viewModel.errorMessage ?? defaultErrorMessage, isPresented: Binding(
-                get: { viewModel.errorMessage != nil },
-                set: { if !$0 { viewModel.errorMessage = nil } }
-            )) {
-                Button("OK") {
-                    viewModel.errorMessage = nil
-                }
-            }
-            .refreshable {
-                viewModel.loadCountries()
-            }
-            .onAppear {
-                viewModel.loadCountries()
-            }
+            .alert(defaultErrorMessage, isPresented: isErrorPresented, actions: dismissErrorButton)
+            .refreshable(action: viewModel.loadCountries)
+            .onAppear(perform: viewModel.loadCountries)
         }
     }
 }
+
+// MARK: - Alert
+
+extension CountryListView {
+    private func dismissErrorButton() -> some View {
+        Button("Dismiss") {
+            viewModel.errorMessage = nil
+        }
+    }
+    
+    private var isErrorPresented: Binding<Bool> {
+        Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.errorMessage = nil } }
+        )
+    }
+}
+
+// MARK: - Preview
 
 #Preview {
     let mockDataSource = MockCountryDataSource()
